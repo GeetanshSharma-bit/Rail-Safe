@@ -5,7 +5,7 @@ window.telemetryStore = { time: [], weight: [], temp: [], hum: [], vib: [] };
 async function fetchChartHistory() {
     try {
         // Fetch the last 50 records from your API
-        const response = await fetch('http://127.0.0.1:5000/api/history');
+        const response = await fetch('https://rail-safe.onrender.com/api/history');
         const data = await response.json();
 
         if (!data || data.length === 0) return;

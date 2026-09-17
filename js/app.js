@@ -1,5 +1,6 @@
+// ==========================================
 // SPA Section Switcher
-// SPA Section Switcher
+// ==========================================
 function switchPage(pageId, btnElement) {
     // 1. Hide all pages
     document.querySelectorAll('.page-section').forEach(section => {
@@ -15,26 +16,24 @@ function switchPage(pageId, btnElement) {
     document.getElementById(pageId).classList.add('active-page');
     btnElement.classList.add('active');
 
-    // 4. THE FIX: Force Plotly graphs to recalculate their dimensions
-    // We use a tiny 50ms delay to let the CSS 'display: block' apply first
+    // 4. Force Plotly graphs to recalculate their dimensions
     setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
     }, 50);
-    function switchPage(pageId, btnElement) {
-    // ... your existing code that hides pages and removes active classes ...
-    // ... your existing code that shows the new page and adds the active class ...
 
-    // ADD THIS AT THE VERY BOTTOM OF THE FUNCTION:
+    // 5. Automatically fetch data when the history tab opens
     if (pageId === 'history') {
-        fetchHistory(); // Automatically fetch data when the tab opens!
+        fetchHistory(); 
     }
 }
-}
 
+// ==========================================
 // Fetch historical MySQL logs via Flask REST API
+// ==========================================
 async function fetchDatabaseLogs() {
     try {
-        const response = await fetch('http://localhost:5000/api/events');
+        // UPDATED: Pointing to Render API
+        const response = await fetch('https://rail-safe.onrender.com/api/events');
         if (!response.ok) return;
         
         const events = await response.json();
@@ -57,14 +56,16 @@ async function fetchDatabaseLogs() {
 // Fetch logs on startup
 document.addEventListener("DOMContentLoaded", () => {
     fetchDatabaseLogs();
-  //  setInterval(fetchDatabaseLogs, 10000); // Poll API every 10 seconds
+    // setInterval(fetchDatabaseLogs, 10000); // Poll API every 10 seconds
 });
-// --- Dark Mode Logic ---
+
+// ==========================================
+// Theme & UI Logic
+// ==========================================
 function toggleTheme() {
     const body = document.body;
     const themeBtn = document.getElementById('theme-toggle');
     
-    // Toggle the data-theme attribute
     if (body.getAttribute('data-theme') === 'dark') {
         body.removeAttribute('data-theme');
         themeBtn.innerText = '🌙';
@@ -73,30 +74,26 @@ function toggleTheme() {
         themeBtn.innerText = '☀️';
     }
 
-    // Force Plotly to redraw with new Dark/Light text colors
     setTimeout(() => {
         if (typeof updateAllCharts === "function") updateAllCharts();
     }, 100);
 }
 
-// --- Alert Modal Logic ---
 window.alertActive = false; 
 
 function dismissAlert() {
     document.getElementById('critical-modal').classList.remove('show-modal');
-    // Prevents the pop-up from appearing again for the next 10 seconds
     setTimeout(() => { window.alertActive = false; }, 10000); 
 }
-// --- Mobile Menu Logic ---
+
 function toggleMenu() {
-    const nav = document.getElementById('nav-capsule');
-    nav.classList.toggle('open');
+    document.getElementById('nav-capsule').classList.toggle('open');
 }
 
 function closeMenu() {
-    const nav = document.getElementById('nav-capsule');
-    nav.classList.remove('open');
+    document.getElementById('nav-capsule').classList.remove('open');
 }
+
 // ==========================================
 // HISTORICAL DATA FETCH & RENDER
 // ==========================================
@@ -104,12 +101,11 @@ async function fetchHistory() {
     const hours = document.getElementById('history-timeframe').value;
     const chartDiv = document.getElementById('chart-history-view');
     
-    // Show a loading state
     chartDiv.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; font-weight:bold;">Querying Database...</div>';
 
     try {
-        // Ping your Flask REST API
-        const response = await fetch(`http://127.0.0.1:5000/api/history?hours=${hours}`);
+        // UPDATED: Pointing to Render API
+        const response = await fetch(`https://rail-safe.onrender.com/api/history?hours=${hours}`);
         const data = await response.json();
 
         if (data.error) {
@@ -123,15 +119,12 @@ async function fetchHistory() {
             return;
         }
 
-        // Clear the loading text
         chartDiv.innerHTML = '';
 
-        // Check if Dark Mode is active for styling
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         const fontColor = isDark ? '#f8fafc' : '#1e293b';
         const gridColor = isDark ? '#334155' : '#e2e8f0';
 
-        // Draw the Historical Plotly Chart
         Plotly.newPlot('chart-history-view', [
             {
                 x: data.time, 
