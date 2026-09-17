@@ -7,7 +7,7 @@ from ultralytics import YOLO
 from config import DB_CONFIG
 
 # Load the YOLO AI Model (It will auto-download the first time you run it)
-model = YOLO('yolov8n.pt') 
+
 
 # Your Pi's local Wi-Fi IP address
 PI_CAMERA_URL = "http://192.168.1.140:5001/stream"
@@ -105,5 +105,10 @@ def video_feed():
 # ---------------------------------------------------------
 # 4. THE RUN COMMAND (Must be at the very bottom - ONLY ONCE)
 # ---------------------------------------------------------
+import os
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Grab Render's dynamic port, or default to 5000 locally
+    port = int(os.environ.get("PORT", 5000))
+    # 0.0.0.0 exposes the API to the public internet
+    app.run(host='0.0.0.0', port=port)
