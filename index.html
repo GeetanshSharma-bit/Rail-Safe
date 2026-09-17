@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailSafe Monitoring</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    
+    <!-- Third-Party Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+    <!-- Unified Sticky Command Bar -->
+   <!-- Unified Sticky Command Bar -->
+    <!-- Unified Sticky Command Bar -->
+    <nav class="sticky-nav">
+        <div class="nav-capsule" id="nav-capsule">
+            
+            <!-- Left: Logo & Mobile Toggle -->
+            <div class="nav-brand">
+                <a href="." class="nav-logo">RailSafe<span>.</span></a>
+                <button class="hamburger" onclick="toggleMenu()">☰</button>
+            </div>
+            
+            <!-- Center: Navigation Buttons -->
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="switchPage('overview', this); closeMenu()">Executive Overview</button>
+                <button class="nav-btn" onclick="switchPage('impact', this); closeMenu()">Impact Analysis</button>
+                <button class="nav-btn" onclick="switchPage('vibration', this); closeMenu()">Vibration Profile</button>
+                <button class="nav-btn" onclick="switchPage('environment', this); closeMenu()">Environment</button>
+                <button class="nav-btn" onclick="switchPage('vision', this); closeMenu()">Vision Feed</button>
+                <button class="nav-btn" onclick="switchPage('history', this); closeMenu()">History Logs</button>
+            </div>
+
+            <!-- Right: Controls -->
+            <div class="nav-controls">
+                <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()">🌙</button>
+                <div id="connection-status" class="nav-status">Connecting...</div>
+            </div>
+            
+        </div>
+    </nav>
+
+    <!-- Page Views Container -->
+    <main class="content-container">
+
+        <!-- PAGE 1: EXECUTIVE OVERVIEW -->
+        <section id="overview" class="page-section active-page">
+            <div class="metrics-row">
+                <div class="card metric-card">
+                    <span class="label">Axle Load</span>
+                    <h2 id="metric-weight">0.0 kg</h2>
+                </div>
+                <div class="card metric-card">
+                    <span class="label">Bogies</span>
+                    <h2 id="metric-bogies">0</h2>
+                </div>
+                <div class="card metric-card">
+                    <span class="label">Temp</span>
+                    <h2 id="metric-temp">0.0 °C</h2>
+                </div>
+                <div class="card metric-card">
+                    <span class="label">Humidity</span>
+                    <h2 id="metric-hum">0.0 %</h2>
+                </div>
+                <div class="card metric-card">
+                    <span class="label">Status</span>
+                    <div id="metric-status" class="badge-normal">Safe</div>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="card chart-card-wide">
+                    <h3>Real-Time Wheel Load Telemetry</h3>
+                    <div id="chart-overview-area"></div>
+                </div>
+                <div class="card chart-card-narrow">
+                    <h3>Peak Axle Load Gauge</h3>
+                    <div id="chart-overview-gauge"></div>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <h3>Global System Event Logs</h3>
+                <table id="table-global-events">
+                    <thead>
+                        <tr><th>Time</th><th>Event Flag</th><th>Value</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAGE 2: IMPACT ANALYSIS -->
+        <section id="impact" class="page-section">
+            <div class="card chart-card-full">
+                <h3>High-Frequency Load Cell Data (HX711)</h3>
+                <div id="chart-impact-line"></div>
+            </div>
+            <div class="card table-card">
+                <h3>Local Sensor Log (Load Cell Array)</h3>
+                <table id="table-impact-logs">
+                    <thead><tr><th>Time</th><th>Recorded Load (kg)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAGE 3: VIBRATION PROFILE -->
+        <section id="vibration" class="page-section">
+            <div class="card chart-card-full">
+                <h3>Structural Vibration Profile & Shock Events</h3>
+                <div id="chart-vibration-bar"></div>
+            </div>
+            <div class="card table-card">
+                <h3>Local Sensor Log (Vibration & Acoustic)</h3>
+                <table id="table-vibration-logs">
+                    <thead><tr><th>Time</th><th>Shock Event Flag</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAGE 4: ENVIRONMENT -->
+        <section id="environment" class="page-section">
+            <div class="card chart-card-full">
+                <h3>Trackside Ambient Conditions</h3>
+                <div id="chart-env-scatter"></div>
+            </div>
+            <div class="card table-card">
+                <h3>Local Sensor Log (DHT22 Trackside)</h3>
+                <table id="table-env-logs">
+                 <thead><tr><th>Time</th><th>Temperature (°C)</th><th>Humidity (%)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAGE 5: VISION FEED -->
+        <section id="vision" class="page-section">
+            <div class="vision-grid">
+                <div class="card vision-feed-card">
+                    <h3>Visual Inspection Camera (Pi Cam u439)</h3>
+                  <img src="http://192.168.1.140:5001/video_stream" alt="Live Camera Feed" />
+                </div>
+                <div class="vision-meta">
+                    <div class="card"><b>Camera Model:</b> Pi Cam v2</div>
+                    <div class="card"><b>Inference Model:</b> YOLOv8 Defect Detection</div>
+                    <div class="card"><b>Resolution:</b> 1080p @ 30 FPS</div>
+                </div>
+            </div>
+        </section>
+        <!-- ========================================= -->
+    <!-- PAGE: HISTORY LOGS                        -->
+    <!-- ========================================= -->
+    <section id="history" class="page-section" >
+        
+        <div class="card" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;">Historical Telemetry Query</h3>
+                
+                <div style="display: flex; gap: 15px;">
+                    <select id="history-timeframe" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--grid-line); background: var(--bg-main); color: var(--text-main); font-weight: bold;">
+                        <option value="1">Past 1 Hour</option>
+                        <option value="24" selected>Past 24 Hours</option>
+                        <option value="168">Past 7 Days</option>
+                    </select>
+                    <button onclick="fetchHistory()" class="modal-btn" style="margin-top: 0; padding: 8px 20px; font-size: 0.95rem;">Load Data</button>
+                </div>
+            </div>
+
+            <!-- The Historical Chart Container -->
+            <div id="chart-history-view" style="width: 100%; height: 500px;">
+                <div style="display:flex; justify-content:center; align-items:center; height:100%; opacity: 0.5;">
+                    Click "Load Data" to query the database.
+                </div>
+            </div>
+        </div>
+        
+    </section>
+
+    </main>
+
+    <!-- Application JavaScript Modules -->
+    <script src="js/charts.js"></script>
+    <script src="js/mqtt-client.js"></script>
+    <script src="js/app.js"></script>
+    <!-- Critical Alert Modal -->
+    <div id="critical-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 class="modal-title">⚠️ CRITICAL SHOCK DETECTED</h2>
+            <p>An abnormal structural impact has been recorded on the axle.</p>
+            <p><strong>Immediate inspection recommended.</strong></p>
+            <button onclick="dismissAlert()" class="modal-btn">Acknowledge</button>
+        </div>
+    </div>
+</body>
+</html>

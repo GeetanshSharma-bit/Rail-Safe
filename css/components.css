@@ -1,0 +1,375 @@
+/* =========================================
+   1. CSS VARIABLES & THEMES
+========================================= */
+:root {
+    --bg-main: #fdf8f0;       /* Skin-tone light background */
+    --bg-card: #ffffff;       /* Pure white cards */
+    --text-main: #1e293b;     /* Slate text */
+    --grid-line: #e2e8f0;     /* Light grid lines */
+    --nav-bg: #1e293b;        /* Classic dark navy for light mode */
+    --brand-blue: #3b82f6;
+}
+
+[data-theme="dark"] {
+    --bg-main: #0f172a;       /* Deep slate background */
+    --bg-card: #1e293b;       /* Darker card background */
+    --text-main: #f8fafc;     /* White text */
+    --grid-line: #334155;     /* Dark grid lines */
+    --nav-bg: #020617;        /* Pitch black / ultra dark for the navbar in dark mode */
+    --brand-blue: #3b82f6;
+}
+
+/* =========================================
+   2. GLOBAL TRANSITIONS & BODY RESETS
+========================================= */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0; 
+    overflow-x: hidden; /* CRITICAL: Prevents 100vw from causing a horizontal scrollbar */
+}
+
+/* =========================================
+   3. UNIVERSAL CARD STYLING
+========================================= */
+.chart-card-wide, .chart-card-narrow, .chart-card-full, .metric-card, .card, .table-container {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Chart Grids */
+.charts-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.chart-card-wide { flex: 2; min-height: 380px; }
+.chart-card-narrow { flex: 1; min-height: 350px; }
+.chart-card-full { margin-bottom: 20px; min-height: 460px; overflow: hidden; }
+
+/* =========================================
+   4. COMMAND BAR (FULL WIDTH NAVBAR)
+========================================= */
+.sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    /* Full bleed hack: Forces the nav to touch the screen edges */
+    margin-left: calc(50% - 50vw); 
+    margin-bottom: 30px;
+}
+
+.nav-capsule {
+    background-color: var(--nav-bg);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 24px 50px; /* Taller height & wider side padding */
+    border-radius: 0;   /* Square edges for full width */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease; /* Animates the color change */
+}
+
+/* Nav Logo */
+.nav-logo {
+    color: #ffffff;
+    font-size: 1.8rem; /* Scaled up for the taller nav */
+    font-weight: 900;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+.nav-logo span { color: var(--brand-blue); }
+
+/* Nav Buttons */
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.nav-btn {
+    background-color: transparent;
+    color: #94a3b8;
+    border: none;
+    padding: 10px 24px; /* Taller clickable area */
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem; /* Larger font */
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+}
+
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.nav-btn.active {
+    background-color: var(--brand-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Right Side Controls */
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.theme-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem; /* Larger moon/sun icon */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.theme-btn:hover { transform: scale(1.15); }
+
+.nav-status {
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 1.05rem;
+    min-width: 120px;
+    text-align: right;
+}
+/* Mobile Hamburger Icon (Hidden on Desktop) */
+.nav-brand {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hamburger {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.hamburger:active { transform: scale(0.9); }
+
+/* =========================================
+   5. TABLE STYLING (LIGHT & DARK)
+========================================= */
+table { width: 100%; border-collapse: collapse; }
+
+[data-theme="dark"] table { color: var(--text-main); }
+
+[data-theme="dark"] th {
+    background-color: var(--bg-card);
+    color: #94a3b8;
+    border-bottom: 2px solid var(--grid-line);
+    padding: 12px;
+    text-align: left;
+}
+
+[data-theme="dark"] td {
+    border-bottom: 1px solid var(--grid-line);
+    color: #e2e8f0;
+    padding: 12px;
+}
+
+[data-theme="dark"] tbody tr:hover td { background-color: #334155; }
+
+/* =========================================
+   6. CRITICAL ALERT MODAL
+========================================= */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85); /* Darker backdrop */
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.show-modal { display: flex; }
+
+.modal-card {
+    background: #ef4444; 
+    color: white;
+    padding: 40px 50px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(239, 68, 68, 0.7);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-title { margin-bottom: 15px; font-size: 1.8rem; font-weight: 900; }
+
+.modal-btn {
+    margin-top: 25px; padding: 12px 30px;
+    border: none; border-radius: 8px;
+    background: white; color: #ef4444;
+    font-weight: 900; font-size: 1.1rem; 
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.modal-btn:hover { transform: scale(1.05); }
+
+@keyframes popIn { 
+    0% { transform: scale(0.8); opacity: 0; } 
+    100% { transform: scale(1); opacity: 1; } 
+}
+/* =========================================
+   7. TOP METRICS ROW LAYOUT
+========================================= */
+/* Target the container holding the 5 metric cards */
+.metrics-row, .metrics-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Force all 5 cards to take up an exact equal amount of space */
+.metric-card {
+    flex: 1; 
+    min-width: 0; /* Prevents text from pushing the cards out of proportion */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+/* =========================================
+   8. STATUS BADGES
+========================================= */
+.badge-normal {
+    background-color: #d1fae5; /* Light pastel green */
+    color: #065f46; /* Dark green text */
+    padding: 6px 16px;
+    border-radius: 50px; /* Makes it a pill/bubble shape */
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.badge-alert {
+    background-color: #fee2e2; /* Light pastel red */
+    color: #991b1b; /* Dark red text */
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-top: 8px;
+    /* Adds a glowing warning effect */
+    animation: pulseAlert 1.5s infinite; 
+    width: fit-content;
+}
+
+@keyframes pulseAlert {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+/* =========================================
+   9. RESPONSIVE DESIGN (MEDIA QUERIES)
+========================================= */
+
+/* Tablet & Smaller Laptops (Max Width: 1024px) */
+@media (max-width: 1024px) {
+    /* Stack the side-by-side charts */
+    .charts-row {
+        flex-direction: column;
+    }
+    
+    .chart-card-wide, .chart-card-narrow {
+        width: 100%;
+        min-height: 380px;
+    }
+
+    /* Wrap the top 5 metric cards into two rows */
+    .metrics-row, .metrics-container {
+        flex-wrap: wrap; 
+    }
+
+    .metric-card {
+        flex: 1 1 calc(33.333% - 20px); /* 3 cards on the top row, 2 on the bottom */
+        min-width: 160px;
+    }
+
+    /* Shrink Navbar padding slightly */
+    .nav-capsule {
+        padding: 15px 30px;
+    }
+}
+
+/* Mobile Phones (Max Width: 768px) */
+/* Mobile Phones (Max Width: 768px) */
+@media (max-width: 768px) {
+    .nav-capsule {
+        flex-direction: column;
+        padding: 15px 25px;
+        align-items: stretch; /* Stretches the brand bar across the top */
+    }
+
+    .nav-brand { width: 100%; }
+    .hamburger { display: block; } /* Show the 3 lines */
+
+    /* Hide menus by default */
+    .nav-buttons, .nav-controls {
+        display: none; 
+        width: 100%;
+    }
+
+    /* Stack the buttons vertically when shown */
+    .nav-buttons {
+        flex-direction: column;
+        margin-top: 20px;
+        gap: 5px;
+    }
+
+    .nav-btn {
+        padding: 12px 16px;
+        font-size: 1rem;
+        text-align: left; /* Looks better on mobile menus */
+    }
+
+    .nav-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--grid-line); /* Clean separator line */
+    }
+
+    /* THE MAGIC CLASS: Shows the menus when Javascript adds '.open' */
+    .nav-capsule.open .nav-buttons, 
+    .nav-capsule.open .nav-controls {
+        display: flex;
+    }
+
+    .metric-card { flex: 1 1 100%; }
+    .modal-card { width: 90%; padding: 25px 20px; }
+    .modal-title { font-size: 1.4rem; }
+}
+/* =========================================
+   10. RESPONSIVE IMAGES (VISION FEED)
+========================================= */
+.card img, 
+.chart-card-wide img, 
+.chart-card-narrow img, 
+.chart-card-full img {
+    max-width: 100%;       /* Prevents the image from overflowing its container */
+    height: auto;          /* Maintains the original aspect ratio */
+    border-radius: 8px;    /* Softens the corners to match the card style */
+    display: block;        /* Removes default weird spacing below images */
+    margin: 10px auto;     /* Centers the image nicely */
+}
